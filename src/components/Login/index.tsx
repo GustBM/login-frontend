@@ -20,12 +20,16 @@ export default function Login() {
   const [snackbarMessage, setSnackbarMessage] = React.useState('');
   const [snackbarSeverity, setSnackbarSeverity] = React.useState<'success' | 'error'>('error');
   const { login } = useAuth();
+
+  const handleSnackbarClose = () => {
+    setSnackbarOpen(false);
+  };
   
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
     try {
-      login(username, password);
+      await login(username, password);
       setSnackbarSeverity('success');
       setSnackbarMessage('Login bem-sucedido!');
       setSnackbarOpen(true);
@@ -132,7 +136,7 @@ export default function Login() {
           open={snackbarOpen}
           message={snackbarMessage}
           severity={snackbarSeverity}
-          onClose={() => {}}
+          onClose={handleSnackbarClose}
         />
       </SignInContainer>
     </>
