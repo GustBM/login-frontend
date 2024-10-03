@@ -1,16 +1,25 @@
-import React, { useState } from 'react';
-import { IconButton, Typography, TextField, InputAdornment, Box, Grid2, Button } from '@mui/material';
+import React, { useRef, useState } from 'react';
+import { IconButton, Typography, TextField, InputAdornment, Box, Grid2, Button, Snackbar, Alert } from '@mui/material';
 import { Upload as UploadIcon } from '@mui/icons-material';
 import api from '@utils/api';
 import { transformJsonToData } from '@utils/generalUtils';
 import * as XLSX from 'xlsx';
+import NotificationSnackbar from '@components/NotificationSnackbar';
 
-// interface FileUploadProps {
-//   functionCall: Function;
-// }
+interface FileUploadProps {
+  onUploadSuccess: () => void;
+}
 
-const FileUpload : React.FC = () => {
+const FileUpload: React.FC<FileUploadProps> = ({ onUploadSuccess }) => {
   const [selectedFile, setSelectedFile] = useState<File | undefined>(undefined);
+  const [snackbarOpen, setSnackbarOpen] = useState(false); 
+  const [snackbarMessage, setSnackbarMessage] = useState(''); 
+  const [snackbarSeverity, setSnackbarSeverity] = useState<'success' | 'error'>('success');  
+  const inputRef = useRef(null);
+  
+  const handleSnackbarClose = () => {
+    setSnackbarOpen(false);
+  };
 
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -21,12 +30,21 @@ const FileUpload : React.FC = () => {
     async function postFileJson(json: any) {
       try {
         await api.post('/data', json);
+        setSelectedFile(undefined);
+        setSnackbarMessage('Upload realizado com sucesso!');
+        setSnackbarSeverity('success');
+        setSnackbarOpen(true);
+        onUploadSuccess(); 
       } catch (error) {
         console.error('File Data Post Error:', error);
-      } 
+        setSnackbarMessage('Falha no upload. Tente novamente.');
+        setSnackbarSeverity('error');
+        setSnackbarOpen(true);
+      }
     }
 
     if (!selectedFile) return;
+    // inputRef.current! = "";
 
     const reader = new FileReader();
 
@@ -54,6 +72,7 @@ const FileUpload : React.FC = () => {
         >
           Carregar Arquivo
           <input
+            ref={inputRef}
             type="file"
             onChange={handleFileUpload}
             hidden
@@ -73,6 +92,12 @@ const FileUpload : React.FC = () => {
           
         )}
       </Grid2>
+      <NotificationSnackbar
+        open={snackbarOpen}
+        message={snackbarMessage}
+        severity={snackbarSeverity}
+        onClose={handleSnackbarClose}
+      />
     </Box>
   );
 };

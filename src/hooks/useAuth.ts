@@ -21,6 +21,7 @@ export const useAuth = () => {
       navigate('/home');
     } catch (error) {
       console.error('Login failed:', error);
+      throw new Error('Falha no login. Verifique suas credenciais e tente novamente.');
     }
   };
 

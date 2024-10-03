@@ -7,6 +7,7 @@ import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 import { Card, SignInContainer } from './style';
 import { useAuth } from '@hooks/useAuth';
+import NotificationSnackbar from '@components/NotificationSnackbar';
 
 export default function Login() {
   const [username, setUsername] = React.useState<string>('');
@@ -15,11 +16,24 @@ export default function Login() {
   const [emailErrorMessage, setEmailErrorMessage] = React.useState('');
   const [passwordError, setPasswordError] = React.useState(false);
   const [passwordErrorMessage, setPasswordErrorMessage] = React.useState('');
+  const [snackbarOpen, setSnackbarOpen] = React.useState(false);
+  const [snackbarMessage, setSnackbarMessage] = React.useState('');
+  const [snackbarSeverity, setSnackbarSeverity] = React.useState<'success' | 'error'>('error');
   const { login } = useAuth();
   
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    login(username, password);
+
+    try {
+      login(username, password);
+      setSnackbarSeverity('success');
+      setSnackbarMessage('Login bem-sucedido!');
+      setSnackbarOpen(true);
+    } catch (error: any) {
+      setSnackbarSeverity('error');
+      setSnackbarMessage(error.message);
+      setSnackbarOpen(true);
+    }
   };
 
   const validateInputs = () => {
@@ -27,7 +41,7 @@ export default function Login() {
 
     if (!username || !/\S+@\S+\.\S+/.test(username)) {
       setEmailError(true);
-      setEmailErrorMessage('Please enter a valid email address.');
+      setEmailErrorMessage('Email Inválido');
       isValid = false;
     } else {
       setEmailError(false);
@@ -36,7 +50,7 @@ export default function Login() {
 
     if (!password || password.length < 4) {
       setPasswordError(true);
-      setPasswordErrorMessage('Password must be at least 6 characters long.');
+      setPasswordErrorMessage('Senha Deve Ter Pelo Menos 4 Caracteres.');
       isValid = false;
     } else {
       setPasswordError(false);
@@ -114,6 +128,12 @@ export default function Login() {
             </Button>
           </Box>
         </Card>
+        <NotificationSnackbar
+          open={snackbarOpen}
+          message={snackbarMessage}
+          severity={snackbarSeverity}
+          onClose={() => {}}
+        />
       </SignInContainer>
     </>
   );
