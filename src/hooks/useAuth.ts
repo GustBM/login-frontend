@@ -27,6 +27,7 @@ export const useAuth = () => {
   const logout = () => {
     localStorage.removeItem('authToken');
     setIsAuthenticated(false);
+    navigate('/');
   };
 
   return {

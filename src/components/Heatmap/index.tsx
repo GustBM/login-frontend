@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import ReactEcharts from 'echarts-for-react';
 import Data from '@customTypes/Data';
+import { tempoToDate } from '@utils/generalUtils';
 
 interface HeatmapProps {
   data: Array<Data>;
@@ -10,7 +11,7 @@ class Heatmap extends Component<HeatmapProps> {
   getOption = () => {
     const { data } = this.props;
 
-    const yAxisLabels = [
+    const xAxisLabels = [
       'Temperatura Entrada Multijato',
       'Temperatura Saída Multijato',
       'Abertura Válvula Alimentação',
@@ -89,79 +90,139 @@ class Heatmap extends Component<HeatmapProps> {
     const maxValue = Math.max(...allValues);
 
     return {
-      title: {
-        text: 'Heatmap: File Data',
-        left: 'center',
-      },
-      tooltip: {
-        position: 'top',
-        formatter: function (params: any) {
-          const labels = yAxisLabels[params.value[1]];
-          return `${labels}: ${params.value[2]}`;
-        },
-      },
+      tooltip: {},
       grid: {
-        height: '50%',
-        top: '10%',
+        right: 160,
+        left: 200
       },
       xAxis: {
         type: 'category',
-        data: data.map((item) => item.tempo),
-        splitArea: {
-          show: true,
-        },
-        name: 'Tempo',
+        data: data.map((item) => tempoToDate(item.tempo).toLocaleDateString())
       },
       yAxis: {
         type: 'category',
-        data: yAxisLabels,
-        splitArea: {
-          show: true,
-        },
-        name: 'Atributos',
+        data: xAxisLabels
       },
-      visualMap: [
-        {
-          min: minValue,
-          max: maxValue,
-          calculable: true,
-          orient: 'vertical',
-          left: 'right',
-          top: 'center',
-          text: ['High', 'Low'],
-          textStyle: {
-            color: '#000',
-          },
-          inRange: {
-            color: ['#313695', '#4575b4', '#74add1', '#abd9e9', '#e0f3f8', '#ffffbf', '#fee090', '#fdae61', '#f46d43', '#d73027', '#a50026'],
-          },
-        },
-      ],
+      visualMap: {
+        type: 'piecewise',
+        min: minValue,
+        max: maxValue,
+        left: 'right',
+        top: 'center',
+        calculable: true,
+        realtime: false,
+        splitNumber: 8,
+        inRange: {
+          color: [
+            '#313695',
+            '#4575b4',
+            '#74add1',
+            '#abd9e9',
+            '#e0f3f8',
+            '#ffffbf',
+            '#fee090',
+            '#fdae61',
+            '#f46d43',
+            '#d73027',
+            '#a50026'
+          ]
+        }
+      },
       series: [
         {
-          name: 'Data Attributes',
+          name: 'Data',
           type: 'heatmap',
           data: heatmapData,
-          label: {
-            show: true,
-          },
           emphasis: {
             itemStyle: {
-              shadowBlur: 10,
-              shadowColor: 'rgba(0, 0, 0, 0.5)',
-            },
+              borderColor: '#333',
+              borderWidth: 1
+            }
           },
-        },
-      ],
+          progressive: 1000,
+          animation: false
+        }
+      ]
     };
+
+    // return {
+    //   tooltip: {
+    //     trigger: 'axis',
+    //     position: function (pt: any) {
+    //       return [pt[0], '10%'];
+    //     }
+    //   },
+    //   title: {
+    //     left: 'center',
+    //     text: 'Dados em Gráfico de Área'
+    //   },
+    //   toolbox: {
+    //     feature: {
+    //       dataZoom: {
+    //         yAxisIndex: 'none'
+    //       },
+    //       restore: {},
+    //       saveAsImage: {}
+    //     }
+    //   },
+    //   xAxis: {
+    //     type: 'category',
+    //     boundaryGap: false,
+    //     data: data.map((item) => tempoToDate(item.tempo).toLocaleDateString())
+    //   },
+    //   yAxis: {
+    //     // type: 'value',
+    //     // boundaryGap: [0, '100%']
+    //     type: 'category',
+    //     data: xAxisLabels
+    //   },
+    //   dataZoom: [
+    //     {
+    //       type: 'inside',
+    //       start: 0,
+    //       end: 10
+    //     },
+    //     {
+    //       start: 0,
+    //       end: 10
+    //     }
+    //   ],
+    //   series: [
+    //     {
+    //       name: 'Data',
+    //       type: 'line',
+    //       symbol: 'none',
+    //       sampling: 'lttb',
+    //       itemStyle: {
+    //         color: 'rgb(255, 70, 131)'
+    //       },
+    //       areaStyle: {
+    //         color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+    //           {
+    //             offset: 0,
+    //             color: 'rgb(255, 158, 68)'
+    //           },
+    //           {
+    //             offset: 1,
+    //             color: 'rgb(255, 70, 131)'
+    //           }
+    //         ])
+    //       },
+    //       data: heatmapData
+    //     }
+    //   ]
+    // };
+
   };
+
+  
 
   render() {
     return (
-      <div>
+      <div id="heatmap-container">
         <ReactEcharts
           option={this.getOption()}
-          style={{ height: '1200px', width: '100%' }}
+          style={{ height: '1000px', width: 'auto' }}
         />
       </div>
     );
