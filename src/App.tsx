@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-d
 import Login from '@components/Login';
 import Home from '@components/Home';
 import { useAuth } from '@hooks/useAuth';
+import AppTheme from 'shared/AppTheme';
 
 const PrivateRoute: React.FC<{ children: JSX.Element }> = ({ children }) => {
   const { isAuthenticated } = useAuth();
@@ -11,19 +12,21 @@ const PrivateRoute: React.FC<{ children: JSX.Element }> = ({ children }) => {
 
 const App: React.FC = () => {
   return (
-    <Router>
-      <Routes>
-        <Route path="/" element={<Login />} />
-        <Route
-          path="/home"
-          element={
-            <PrivateRoute>
-              <Home />
-            </PrivateRoute>
-          }
-        />
-      </Routes>
-    </Router>
+    <AppTheme>
+      <Router>
+        <Routes>
+          <Route path="/" element={<Login />} />
+          <Route
+            path="/home"
+            element={
+              <PrivateRoute>
+                <Home />
+              </PrivateRoute>
+            }
+          />
+        </Routes>
+      </Router>
+    </AppTheme>
   );
 };
 

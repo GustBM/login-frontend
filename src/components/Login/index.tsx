@@ -1,14 +1,10 @@
 import * as React from 'react';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
-import Checkbox from '@mui/material/Checkbox';
-import CssBaseline from '@mui/material/CssBaseline';
-import FormControlLabel from '@mui/material/FormControlLabel';
 import FormLabel from '@mui/material/FormLabel';
 import FormControl from '@mui/material/FormControl';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
-import AppTheme from '../../shared/AppTheme';
 import { Card, SignInContainer } from './style';
 import { useAuth } from '@hooks/useAuth';
 
@@ -51,8 +47,7 @@ export default function Login() {
   };
 
   return (
-    <AppTheme>
-      <CssBaseline enableColorScheme />
+    <>
       <SignInContainer direction="column" justifyContent="space-between">
         <Card variant="outlined">
           <Typography
@@ -60,7 +55,7 @@ export default function Login() {
             variant="h4"
             sx={{ width: '100%', fontSize: 'clamp(2rem, 10vw, 2.15rem)' }}
           >
-            Sign in
+            Login
           </Typography>
           <Box
             component="form"
@@ -109,21 +104,17 @@ export default function Login() {
                 color={passwordError ? 'error' : 'primary'}
               />
             </FormControl>
-            <FormControlLabel
-              control={<Checkbox value="remember" color="primary" />}
-              label="Remember me"
-            />
             <Button
               type="submit"
               fullWidth
               variant="contained"
               onClick={validateInputs}
             >
-              Sign in
+              Login
             </Button>
           </Box>
         </Card>
       </SignInContainer>
-    </AppTheme>
+    </>
   );
 }
